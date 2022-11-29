@@ -1,95 +1,78 @@
 import java.io.*;
 import java.text.*;
 import java.util.*;
+
 public class StudentList {
+	public static String students;
+	public static Contants constant = new Contants();
+	public static String studentName[];
+
+	public static void reader(){
+		try{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(constant.fileName)));
+			students = reader.readLine();
+			studentName = students.split(constant.split);
+		}catch (Exception e){
+			System.out.println(e);
+		}
+	}
+	public static void writer(String lastUpdate){
+		try {
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(constant.fileName, false));
+			bufferedWriter.flush();
+			bufferedWriter.write(lastUpdate);
+			bufferedWriter.close();
+		}catch (Exception e){
+			System.out.println(e);
+		}
+	}
 	public static void main(String[] args) {
 
 //		Check arguments
-		if(args[0].equals("a")) {
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			String i[] = r.split(",");			
-			for(String j : i) { System.out.println(j); }
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");
+		if(args.length!=1){
+			System.out.println(constant.invalid);
 		}
-		else if(args[0].equals("r")) 
-		{
-			System.out.println("Loading data ...");			
+		if (args[0].equals(constant.showNames)) {
+			System.out.println(constant.loadingData);
+			reader();
+			for (String name : studentName) {
+				System.out.println(name);
+			}
+			System.out.println(constant.loadedData);
+		} else if (args[0].equals(constant.randomName)) {
+			System.out.println(constant.loadingData);
+			reader();
+			Random random = new Random();
+			System.out.println(studentName[random.nextInt(studentName.length)]);
+			System.out.println(constant.loadedData);
+		} else if (args[0].contains(constant.addName)) {
+			System.out.println(constant.loadingData);
+			reader();
 			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			System.out.println(r);
-			String i[] = r.split(",");	
-			Random x = new Random();
-				int y = x.nextInt();
-					System.out.println(i[y]);
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");			
-		}
-		else if(args[0].contains("+")){
-			System.out.println("Loading data ...");			
-			try {
-			BufferedWriter s = new BufferedWriter(
-					new FileWriter("students.txt", true));
-			String t = args[0].substring(1);
-	        Date d = new Date();
-	        String df = "dd/mm/yyyy-hh:mm:ss a";
-	        DateFormat dateFormat = new SimpleDateFormat(df);
-	        String fd= dateFormat.format(d);
-			s.write(", "+t+"\nList last updated on "+fd);
-			s.close();
-			} catch (Exception e){}
-							
-			System.out.println("Data Loaded.");	
-		}
-		else if(args[0].contains("?")) 
-		{
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String r = s.readLine();
-			String i[] = r.split(",");	
-			boolean done = false;
-			String t = args[0].substring(1);
-			for(int idx = 0; idx<i.length && !done; idx++) {
-				if(i[idx].equals(t)) {
-					System.out.println("We found it!");
-						done=true;
+				String t = args[0].substring(1);
+				DateFormat dateFormat = new SimpleDateFormat(constant.dateFormat);
+				writer(students+", "+args[0].substring(1) + constant.lastUpdate + dateFormat.format(new Date()));
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+			System.out.println(constant.loadedData);
+		} else if (args[0].contains(constant.query)) {
+			System.out.println(constant.loadingData);
+			reader();
+			for (int idx = 0; idx < studentName.length; idx++) {
+				if (studentName[idx].equals(args[0].substring(1))) {
+					System.out.println(constant.found);
+					break;
 				}
 			}
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");				
-		}
-		else if(args[0].contains("c")) 
-		{
-			System.out.println("Loading data ...");			
-			try {
-			BufferedReader s = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream("students.txt"))); 
-			String D = s.readLine();
-			char a[] = D.toCharArray();			
-			boolean in_word = false;
-			int count=0;
-			for(char c:a) {
-				if(c ==' ') 
-				{
-					if (!in_word) {	count++; in_word =true;	}
-					else { in_word=false;}			
-				}
-			}
-			System.out.println(count +" word(s) found " + a.length);
-			} catch (Exception e){} 
-			System.out.println("Data Loaded.");				
+			System.out.println(constant.loadedData);
+		} else if (args[0].contains(constant.countWords)) {
+			System.out.println(constant.loadingData);
+			reader();
+			System.out.println(studentName.length + constant.wordsFound);
+			System.out.println(constant.loadedData);
+		}else{
+			System.out.println(constant.invalid);
 		}
 	}
 }
